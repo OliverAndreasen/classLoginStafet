@@ -1,15 +1,18 @@
 package demo.domain;
 
-import demo.database.FileHandlerStub;
+import demo.database.FileHandler;
 import demo.ui.UserInterface;
+
+import java.io.IOException;
 
 public class Controller {
     boolean isRunning = true;
     private UserInterface ui = new UserInterface();
-    private FileHandlerStub fileHandlerStub = new FileHandlerStub();
-    public void start(){
+    private FileHandler fileHandler = new FileHandler();
+    public void start() throws IOException {
 
         while(isRunning){
+            fileHandler.loadUsers();
             ui.menu();
             switch (ui.userInput()){
                 case "0" -> exit();
@@ -19,13 +22,14 @@ public class Controller {
         }
     }
 
-    public void createUser() {
+    public void createUser() throws IOException {
         ui.printMessage("Type in user name: ");
         String name = ui.userInput();
         ui.printMessage("Type in password: ");
         String password = ui.userInput();
         User user = new User(name, password);
-        fileHandlerStub.saveUser(user);
+        fileHandler.addUser(user);
+        fileHandler.saveUser(user);
     }
 
     public void logIn() {
@@ -33,7 +37,7 @@ public class Controller {
         String name = ui.userInput();
         ui.printMessage("Type in password: ");
         String password = ui.userInput();
-        User user = fileHandlerStub.findUser(name, password);
+        User user = fileHandler.findUser(name, password);
         if(user != null){
             ui.printMessage("Welcome user " + name + " " +  user.getRole());
         } else {
